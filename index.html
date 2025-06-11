@@ -22,7 +22,22 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
-        #admin-login-modal { background-color: rgba(0, 0, 0, 0.6); }
+        #admin-login-modal, #toast-notification { background-color: rgba(0, 0, 0, 0.6); }
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #toast-notification.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -39,7 +54,6 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
                     <span class="mr-4 hidden md:inline">اللوحة الرئيسية</span>
                 </a>
-                <!-- تم التعديل هنا -->
                 <a href="#" class="nav-link flex items-center p-3 rounded-lg hover:bg-gray-700" data-view="lectures-main">
                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m-9-5.747h18" /></svg>
                     <span class="mr-4 hidden md:inline">المحاضرات</span>
@@ -63,50 +77,26 @@
                 <div id="dashboard" class="view active">
                     <h2 class="text-3xl font-bold mb-6">اللوحة الرئيسية</h2>
                      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-lg col-span-1 lg:col-span-2">
-                            <h3 class="text-xl font-bold text-gray-700 mb-4">الجدول الدراسي</h3>
-                            <div id="class-schedule-content" class="text-gray-600 min-h-[100px]"><p>جاري تحميل البيانات...</p></div>
-                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg col-span-1 lg:col-span-2"><h3 class="text-xl font-bold text-gray-700 mb-4">الجدول الدراسي</h3><div id="class-schedule-content" class="text-gray-600 min-h-[100px]"><p>جاري تحميل البيانات...</p></div></div>
                         <div class="space-y-6">
-                             <div class="bg-white p-6 rounded-xl shadow-lg">
-                                <h3 class="text-xl font-bold text-red-600 mb-4">الأقساط الدراسية</h3>
-                                <div id="tuition-fees-content" class="text-gray-600"><p>جاري تحميل البيانات...</p></div>
-                            </div>
-                            <div class="bg-white p-6 rounded-xl shadow-lg">
-                                <h3 class="text-xl font-bold text-blue-600 mb-4">مواعيد الامتحانات</h3>
-                                <div id="exams-schedule-content" class="text-gray-600"><p>جاري تحميل البيانات...</p></div>
-                            </div>
+                             <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold text-red-600 mb-4">الأقساط الدراسية</h3><div id="tuition-fees-content" class="text-gray-600"><p>جاري تحميل البيانات...</p></div></div>
+                            <div class="bg-white p-6 rounded-xl shadow-lg"><h3 class="text-xl font-bold text-blue-600 mb-4">مواعيد الامتحانات</h3><div id="exams-schedule-content" class="text-gray-600"><p>جاري تحميل البيانات...</p></div></div>
                         </div>
                     </div>
                 </div>
-                <!-- قسم المحاضرات الرئيسي الجديد -->
                 <div id="lectures-main" class="view">
                     <h2 class="text-3xl font-bold mb-6">أقسام المحاضرات</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="card bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-8 rounded-xl shadow-lg flex flex-col justify-center items-center h-48 cursor-pointer lecture-type-card" data-type="translated">
-                            <h3 class="text-3xl font-bold">محاضرات مترجمة</h3>
-                        </div>
-                        <div class="card bg-gradient-to-br from-teal-400 to-blue-500 text-white p-8 rounded-xl shadow-lg flex flex-col justify-center items-center h-48 cursor-pointer lecture-type-card" data-type="untranslated">
-                            <h3 class="text-3xl font-bold">محاضرات غير مترجمة</h3>
-                        </div>
+                        <div class="card bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-8 rounded-xl shadow-lg flex justify-center items-center h-48 cursor-pointer lecture-type-card" data-type="translated"><h3 class="text-3xl font-bold">محاضرات مترجمة</h3></div>
+                        <div class="card bg-gradient-to-br from-teal-400 to-blue-500 text-white p-8 rounded-xl shadow-lg flex justify-center items-center h-48 cursor-pointer lecture-type-card" data-type="untranslated"><h3 class="text-3xl font-bold">محاضرات غير مترجمة</h3></div>
                     </div>
                 </div>
                 <div id="subjects" class="view">
-                    <div class="flex items-center mb-6">
-                        <button class="back-btn p-2 rounded-full hover:bg-gray-200" data-target="lectures-main">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                        </button>
-                        <h2 id="subjects-view-title" class="text-3xl font-bold mr-4"></h2>
-                    </div>
+                    <div class="flex items-center mb-6"><button class="back-btn p-2 rounded-full hover:bg-gray-200" data-target="lectures-main"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button><h2 id="subjects-view-title" class="text-3xl font-bold mr-4"></h2></div>
                     <div id="subjects-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
                 </div>
                 <div id="subject-lectures" class="view">
-                    <div class="flex items-center mb-6">
-                         <button class="back-btn p-2 rounded-full hover:bg-gray-200" data-target="subjects">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                        </button>
-                        <h2 id="subject-title" class="text-3xl font-bold mr-4"></h2>
-                    </div>
+                    <div class="flex items-center mb-6"><button class="back-btn p-2 rounded-full hover:bg-gray-200" data-target="subjects"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg></button><h2 id="subject-title" class="text-3xl font-bold mr-4"></h2></div>
                     <div id="lectures-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 </div>
                 <div id="telegram" class="view">
@@ -114,9 +104,7 @@
                     <div id="telegram-channels-list" class="space-y-4"></div>
                 </div>
             </div>
-            <footer class="text-center p-4 bg-gray-900 text-gray-400 text-sm">
-                <p>جميع الحقوق محفوظة © <span id="year"></span> | عبدالرحمن حسن</p>
-            </footer>
+            <footer class="text-center p-4 bg-gray-900 text-gray-400 text-sm"><p>جميع الحقوق محفوظة © <span id="year"></span> | عبدالرحمن حسن</p></footer>
         </main>
     </div>
 
@@ -126,36 +114,13 @@
          <div class="max-w-4xl mx-auto">
              <div class="flex justify-between items-center mb-6"><h2 class="text-3xl font-bold text-gray-800">لوحة التحكم</h2><button id="close-admin-panel" class="p-2 rounded-full hover:bg-gray-300"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button></div>
               <div class="space-y-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-700">تعديل الجداول والمواعيد</h3>
-                    <form id="schedule-form" class="space-y-4">
-                        <div><label class="block text-sm font-medium text-gray-700">الجدول الدراسي</label><div class="flex items-center gap-2"><textarea id="class-schedule-input" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="classSchedule" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div>
-                        <div><label class="block text-sm font-medium text-gray-700">مواعيد الأقساط</label><div class="flex items-center gap-2"><textarea id="tuition-fees-input" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="tuitionFees" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div>
-                        <div><label class="block text-sm font-medium text-gray-700">جدول الامتحانات</label><div class="flex items-center gap-2"><textarea id="exams-schedule-input" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="examsSchedule" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">حفظ كل الجداول</button>
-                    </form>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-700">إدارة المحاضرات</h3>
-                    <form id="lecture-form" class="space-y-4">
-                         <select id="lecture-subject" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></select>
-                         <div class="flex gap-4"><label class="flex items-center"><input type="radio" name="translationStatus" value="untranslated" class="ml-2" checked>غير مترجمة</label><label class="flex items-center"><input type="radio" name="translationStatus" value="translated" class="ml-2">مترجمة</label></div>
-                         <input type="text" id="lecture-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="عنوان المحاضرة" required>
-                         <input type="url" id="lecture-link" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="الصق رابط الملف هنا (أي رابط مباشر)" required>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">إضافة محاضرة</button>
-                    </form>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-700">إدارة قنوات التليكرام</h3>
-                    <form id="telegram-form" class="space-y-4">
-                         <input type="text" id="telegram-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="اسم القناة/المجموعة" required>
-                         <input type="url" id="telegram-link" placeholder="https://t.me/..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">إضافة قناة</button>
-                    </form>
-                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-gray-700">تعديل الجداول والمواعيد</h3><form id="schedule-form" class="space-y-4"><div><label class="block text-sm font-medium text-gray-700">الجدول الدراسي</label><div class="flex items-center gap-2"><textarea id="class-schedule-input" rows="5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="classSchedule" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div><div><label class="block text-sm font-medium text-gray-700">مواعيد الأقساط</label><div class="flex items-center gap-2"><textarea id="tuition-fees-input" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="tuitionFees" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div><div><label class="block text-sm font-medium text-gray-700">جدول الامتحانات</label><div class="flex items-center gap-2"><textarea id="exams-schedule-input" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="ضع النص هنا أو رابط صورة مباشر"></textarea><button type="button" class="clear-btn self-start p-2 text-red-500 hover:text-red-700" data-field="examsSchedule" title="مسح الحقل"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div></div><button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">حفظ كل الجداول</button></form></div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-gray-700">إدارة المحاضرات</h3><form id="lecture-form" class="space-y-4"><select id="lecture-subject" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></select><div class="flex gap-4"><label class="flex items-center"><input type="radio" name="translationStatus" value="untranslated" class="ml-2" checked>غير مترجمة</label><label class="flex items-center"><input type="radio" name="translationStatus" value="translated" class="ml-2">مترجمة</label></div><input type="text" id="lecture-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="عنوان المحاضرة" required><input type="url" id="lecture-link" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="الصق رابط الملف هنا (أي رابط مباشر)" required><button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">إضافة محاضرة</button></form></div>
+                <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-gray-700">إدارة قنوات التليكرام</h3><form id="telegram-form" class="space-y-4"><input type="text" id="telegram-title" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="اسم القناة/المجموعة" required><input type="url" id="telegram-link" placeholder="https://t.me/..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm" required><button type="submit" class="inline-flex justify-center py-2 px-4 shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">إضافة قناة</button></form></div>
             </div>
          </div>
     </div>
+    <div id="toast-notification"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -163,7 +128,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- CONFIGURATION ---
-        // تم تضمين الإعدادات الحقيقية الخاصة بك هنا
         const firebaseConfig = {
             apiKey: "AIzaSyD2MY66x7NldRaHyaj3UtXfiEQ0xdTw7l8",
             authDomain: "anesthesia-950a5.firebaseapp.com",
@@ -174,32 +138,24 @@
             measurementId: "G-8NZ9NVSVWZ"
         };
         
-        const appId = 'anesthesia-platform-v5'; // Using a new ID for the new data structure
+        const appId = 'anesthesia-platform-v6';
         const ADMIN_PASSWORD = "takhdeer";
-        const subjects = ["علم الأدوية", "التخدير السريري", "أساسيات التخدير", "الفيزيولوجيا", "التشريح", "الكيمياء الحياتية"];
+        const subjects = ["الدوائيات", "اسس اجهزة التخدير", "اسس التخدير", "الاحصاء", "الباطنية", "الجراحة"];
         const subjectColors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500'];
         
         let db, auth;
-        let currentLectureType = 'untranslated'; // Default state
+        let currentLectureType = 'untranslated';
 
         try {
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
-            
-            onAuthStateChanged(auth, user => {
-                if (user) {
-                    initializeAppLogic();
-                } else {
-                     signInAnonymously(auth).catch(error => console.error("Anonymous sign-in failed:", error));
-                }
-            });
+            onAuthStateChanged(auth, user => { if (user) initializeAppLogic(); else signInAnonymously(auth).catch(e => console.error(e)); });
         } catch (error) {
             console.error("Firebase initialization failed.", error);
-            alert("فشل الاتصال بقاعدة البيانات. يرجى التأكد من صحة إعدادات Firebase.");
+            alert("فشل الاتصال بقاعدة البيانات.");
         }
 
-        const views = document.querySelectorAll('.view');
         const adminPanelModal = document.getElementById('admin-panel-modal');
 
         function initializeAppLogic() {
@@ -215,7 +171,7 @@
         }
 
         function showView(viewId, context = {}) {
-            views.forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
             const activeView = document.getElementById(viewId);
             if (activeView) {
                 activeView.classList.add('active');
@@ -232,35 +188,23 @@
         
         function renderSubjectCards() {
             const grid = document.getElementById('subjects-grid');
-            grid.innerHTML = '';
-            subjects.forEach((subject, index) => {
+            grid.innerHTML = subjects.map((subject, index) => {
                 const color = subjectColors[index % subjectColors.length];
-                grid.innerHTML += `<div class="card ${color} text-white p-6 rounded-xl shadow-lg flex flex-col justify-between h-48 cursor-pointer subject-card" data-subject="${subject}"><h3 class="text-2xl font-bold">${subject}</h3><p class="text-right">عرض المحاضرات &rarr;</p></div>`;
-            });
-            document.querySelectorAll('.subject-card').forEach(card => {
-                card.addEventListener('click', () => showView('subject-lectures', { subjectName: card.dataset.subject }));
-            });
+                return `<div class="card ${color} text-white p-6 rounded-xl shadow-lg flex flex-col justify-between h-48 cursor-pointer subject-card" data-subject="${subject}"><h3 class="text-2xl font-bold">${subject}</h3><p class="text-right">عرض المحاضرات &rarr;</p></div>`;
+            }).join('');
+            document.querySelectorAll('.subject-card').forEach(card => card.addEventListener('click', () => showView('subject-lectures', { subjectName: card.dataset.subject })));
         }
 
         function populateSubjectDropdown() {
             document.getElementById('lecture-subject').innerHTML = subjects.map(s => `<option value="${s}">${s}</option>`).join('');
         }
-        
-        function isImageUrl(url) {
-            return(typeof url === 'string' && url.match(/\.(jpeg|jpg|gif|png)$/) != null);
-        }
 
+        const isImageUrl = url => typeof url === 'string' && url.match(/\.(jpeg|jpg|gif|png|webp)$/) != null;
+        
         function renderScheduleContent(elementId, content) {
             const element = document.getElementById(elementId);
-            if (!content) {
-                element.innerHTML = '<p>لم يتم التحديد بعد.</p>';
-                return;
-            }
-            if (isImageUrl(content)) {
-                element.innerHTML = `<img src="${content}" class="w-full h-auto rounded-lg shadow-md" alt="جدول دراسي">`;
-            } else {
-                element.innerHTML = `<pre class="whitespace-pre-wrap font-sans">${content}</pre>`;
-            }
+            if (!content) { element.innerHTML = '<p>لم يتم التحديد بعد.</p>'; return; }
+            element.innerHTML = isImageUrl(content) ? `<img src="${content}" class="w-full h-auto rounded-lg shadow-md" alt="جدول">` : `<pre class="whitespace-pre-wrap font-sans">${content}</pre>`;
         }
         
         function loadSchedules() {
@@ -270,7 +214,6 @@
                 renderScheduleContent('class-schedule-content', data.classSchedule);
                 renderScheduleContent('tuition-fees-content', data.tuitionFees);
                 renderScheduleContent('exams-schedule-content', data.examsSchedule);
-                
                 document.getElementById('class-schedule-input').value = data.classSchedule || '';
                 document.getElementById('tuition-fees-input').value = data.tuitionFees || '';
                 document.getElementById('exams-schedule-input').value = data.examsSchedule || '';
@@ -279,23 +222,22 @@
 
         function loadLecturesForSubject(subjectName, translationStatus) {
             const q = query(collection(db, `artifacts/${appId}/public/data/lectures`), where("subject", "==", subjectName), where("translationStatus", "==", translationStatus));
-            const grid = document.getElementById('lectures-grid');
             onSnapshot(q, (snapshot) => {
+                const grid = document.getElementById('lectures-grid');
                 grid.innerHTML = snapshot.empty ? '<p class="col-span-full text-center text-gray-500">لا توجد محاضرات في هذا القسم بعد.</p>' : '';
                 snapshot.forEach((doc) => {
                     const lecture = doc.data();
                     grid.innerHTML += `
                         <div class="card bg-white p-4 rounded-lg shadow-md flex flex-col justify-between">
                             <h4 class="font-bold text-lg text-gray-800">${lecture.title}</h4>
-                            <div class="mt-4 flex justify-between items-center">
-                                <a href="${lecture.url}" target="_blank" class="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded-lg">فتح الملف</a>
-                                <button class="delete-btn text-gray-400 hover:text-red-600 hidden" data-id="${doc.id}" data-type="lecture"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
+                            <div class="mt-4 flex justify-between items-center gap-2">
+                                <a href="${lecture.url}" target="_blank" download class="flex-grow text-center text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 py-2 px-3 rounded-lg">فتح</a>
+                                <button class="share-btn p-2 rounded-lg bg-gray-200 hover:bg-gray-300" data-url="${lecture.url}" data-title="${lecture.title}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6.002l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" /></svg></button>
+                                <button class="delete-btn p-2 text-gray-400 hover:text-red-600" data-id="${doc.id}" data-type="lecture"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
                             </div>
                         </div>`;
                 });
-                if (adminPanelModal.dataset.loggedIn === 'true') {
-                    document.querySelectorAll('#lectures-grid .delete-btn').forEach(btn => btn.classList.remove('hidden'));
-                }
+                updateAdminControlsVisibility();
             });
         }
         
@@ -305,12 +247,15 @@
                 list.innerHTML = snapshot.empty ? '<p class="text-center text-gray-500">لا توجد قنوات مضافة حالياً.</p>' : '';
                 snapshot.forEach(doc => {
                     const channel = doc.data();
-                    list.innerHTML += `<div class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center"><h3 class="text-lg font-semibold">${channel.title}</h3><div class="flex items-center gap-4"><a href="${channel.link}" target="_blank" class="text-sm font-semibold text-white bg-cyan-500 hover:bg-cyan-600 py-2 px-5 rounded-lg">الانضمام</a><button class="delete-btn text-gray-400 hover:text-red-600 hidden" data-id="${doc.id}" data-type="telegram"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button></div></div>`;
+                    list.innerHTML += `<div class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center"><h3 class="text-lg font-semibold">${channel.title}</h3><div class="flex items-center gap-4"><a href="${channel.link}" target="_blank" class="text-sm font-semibold text-white bg-cyan-500 hover:bg-cyan-600 py-2 px-5 rounded-lg">الانضمام</a><button class="delete-btn text-gray-400 hover:text-red-600" data-id="${doc.id}" data-type="telegram"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button></div></div>`;
                 });
-                if (adminPanelModal.dataset.loggedIn === 'true') {
-                    document.querySelectorAll('#telegram-channels-list .delete-btn').forEach(btn => btn.classList.remove('hidden'));
-                }
+                updateAdminControlsVisibility();
             });
+        }
+
+        function updateAdminControlsVisibility() {
+            const loggedIn = adminPanelModal.dataset.loggedIn === 'true';
+            document.querySelectorAll('.delete-btn').forEach(btn => btn.style.display = loggedIn ? 'inline-block' : 'none');
         }
         
         function setupEventListeners() {
@@ -322,7 +267,7 @@
             document.getElementById('close-admin-panel').addEventListener('click', () => {
                 adminPanelModal.classList.add('hidden');
                 adminPanelModal.dataset.loggedIn = 'false';
-                document.querySelectorAll('.delete-btn').forEach(btn => btn.classList.add('hidden'));
+                updateAdminControlsVisibility();
             });
             document.getElementById('admin-login-form').addEventListener('submit', (e) => {
                 e.preventDefault();
@@ -330,17 +275,50 @@
                     document.getElementById('admin-login-modal').classList.add('hidden');
                     adminPanelModal.classList.remove('hidden');
                     adminPanelModal.dataset.loggedIn = 'true';
-                    document.querySelectorAll('.delete-btn').forEach(btn => btn.classList.remove('hidden'));
+                    updateAdminControlsVisibility();
                 } else { alert('رمز سري خاطئ!'); }
                 e.target.reset();
             });
             document.getElementById('schedule-form').addEventListener('submit', handleScheduleSubmit);
             document.getElementById('lecture-form').addEventListener('submit', handleLectureSubmit);
             document.getElementById('telegram-form').addEventListener('submit', handleTelegramSubmit);
-            document.body.addEventListener('click', handleDeleteClick);
+            document.body.addEventListener('click', handleBodyClick);
             document.querySelectorAll('.clear-btn').forEach(btn => btn.addEventListener('click', handleClearField));
         }
+        
+        function handleBodyClick(e) {
+            const deleteBtn = e.target.closest('.delete-btn');
+            const shareBtn = e.target.closest('.share-btn');
+            if (deleteBtn) handleDeleteClick(deleteBtn);
+            if (shareBtn) handleShareClick(shareBtn);
+        }
 
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        async function handleShareClick(button) {
+            const title = button.dataset.title;
+            const url = button.dataset.url;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: title, text: `مشاركة محاضرة: ${title}`, url: url });
+                } catch (error) {
+                    console.error('Error sharing:', error);
+                }
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('تم نسخ رابط المحاضرة!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    showToast('فشل نسخ الرابط');
+                });
+            }
+        }
+        
         async function handleScheduleSubmit(e) {
             e.preventDefault();
             const scheduleRef = doc(db, `artifacts/${appId}/public/data/schedules`, "main");
@@ -351,49 +329,49 @@
                     examsSchedule: document.getElementById('exams-schedule-input').value.trim(),
                 }, { merge: true });
                 alert('تم حفظ الجداول بنجاح!');
-            } catch (error) { console.error("Error saving schedules: ", error); alert('حدث خطأ.'); }
+            } catch (error) { console.error(error); alert('حدث خطأ.'); }
         }
         
         async function handleClearField(e) {
             const field = e.currentTarget.dataset.field;
-            if (!field || !confirm(`هل أنت متأكد أنك تريد مسح حقل "${field}"؟`)) return;
-
+            if (!field || !confirm(`هل أنت متأكد أنك تريد مسح هذا الحقل؟`)) return;
             const scheduleRef = doc(db, `artifacts/${appId}/public/data/schedules`, "main");
             try {
                 await setDoc(scheduleRef, { [field]: "" }, { merge: true });
-                alert(`تم مسح الحقل بنجاح.`);
-            } catch (error) { console.error("Error clearing field: ", error); alert('حدث خطأ.'); }
+                alert(`تم المسح بنجاح.`);
+            } catch (error) { console.error(error); alert('حدث خطأ.'); }
         }
 
         async function handleLectureSubmit(e) {
             e.preventDefault();
-            const subject = document.getElementById('lecture-subject').value;
-            const title = document.getElementById('lecture-title').value.trim();
-            const url = document.getElementById('lecture-link').value.trim();
-            const translationStatus = document.querySelector('input[name="translationStatus"]:checked').value;
+            const form = e.target;
+            const subject = form.querySelector('#lecture-subject').value;
+            const title = form.querySelector('#lecture-title').value.trim();
+            const url = form.querySelector('#lecture-link').value.trim();
+            const translationStatus = form.querySelector('input[name="translationStatus"]:checked').value;
             if (!subject || !title || !url) return alert('يرجى ملء جميع الحقول.');
             try {
                 await addDoc(collection(db, `artifacts/${appId}/public/data/lectures`), { subject, title, url, translationStatus, createdAt: new Date() });
                 alert('تمت إضافة المحاضرة بنجاح!');
-                e.target.reset();
-            } catch (error) { console.error("Error adding lecture: ", error); alert('حدث خطأ.'); }
+                form.reset();
+            } catch (error) { console.error(error); alert('حدث خطأ.'); }
         }
         
         async function handleTelegramSubmit(e) {
             e.preventDefault();
-            const title = document.getElementById('telegram-title').value.trim();
-            const link = document.getElementById('telegram-link').value.trim();
+            const form = e.target;
+            const title = form.querySelector('#telegram-title').value.trim();
+            const link = form.querySelector('#telegram-link').value.trim();
             if (!title || !link) return alert('يرجى ملء جميع الحقول.');
             try {
                 await addDoc(collection(db, `artifacts/${appId}/public/data/telegramChannels`), { title, link });
                 alert('تمت إضافة القناة بنجاح!');
-                e.target.reset();
-            } catch (error) { console.error("Error adding channel: ", error); alert('حدث خطأ.'); }
+                form.reset();
+            } catch (error) { console.error(error); alert('حدث خطأ.'); }
         }
         
-        async function handleDeleteClick(e) {
-            const button = e.target.closest('.delete-btn');
-            if (!button || adminPanelModal.dataset.loggedIn !== 'true') return;
+        async function handleDeleteClick(button) {
+            if (adminPanelModal.dataset.loggedIn !== 'true') return;
             const id = button.dataset.id;
             const type = button.dataset.type;
             if (confirm('هل أنت متأكد أنك تريد حذف هذا العنصر؟')) {
@@ -402,9 +380,10 @@
                 try {
                     await deleteDoc(docRef);
                     alert('تم الحذف بنجاح.');
-                } catch (error) { console.error("Error deleting document: ", error); alert('حدث خطأ أثناء الحذف.'); }
+                } catch (error) { console.error(error); alert('حدث خطأ أثناء الحذف.'); }
             }
         }
     </script>
 </body>
 </html>
+
