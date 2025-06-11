@@ -63,7 +63,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, query, orderBy, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -76,7 +76,7 @@
             measurementId: "G-8NZ9NVSVWZ"
         };
         
-        const appId = 'anesthesia-platform-v7';
+        const appId = 'anesthesia-platform-v8'; // Using a new ID for the new data structure
         const ADMIN_PASSWORD = "takhdeer";
         const subjects = ["الدوائيات", "اسس التخدير", "اسس اجهزة التخدير", "الباطنية", "الجراحة", "الفسلجة", "الاحصاء"];
         const subjectColors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-orange-500'];
@@ -155,13 +155,22 @@
             });
         }
 
+        // --- FIXED LECTURE LOADING LOGIC ---
         function loadLecturesForSubject(subjectName, translationStatus) {
-            const q = query(collection(db, `artifacts/${appId}/public/data/lectures`), where("subject", "==", subjectName), where("translationStatus", "==", translationStatus));
+            const q = query(collection(db, `artifacts/${appId}/public/data/lectures`), where("subject", "==", subjectName));
+            const grid = document.getElementById('lectures-grid');
             onSnapshot(q, (snapshot) => {
-                const grid = document.getElementById('lectures-grid');
-                grid.innerHTML = snapshot.empty ? '<p class="col-span-full text-center text-gray-500">لا توجد محاضرات في هذا القسم بعد.</p>' : '';
-                snapshot.forEach((doc) => {
-                    const lecture = doc.data();
+                const filteredLectures = [];
+                snapshot.forEach(doc => {
+                    const lectureData = doc.data();
+                    if (lectureData.translationStatus === translationStatus) {
+                        filteredLectures.push({ id: doc.id, ...lectureData });
+                    }
+                });
+
+                grid.innerHTML = filteredLectures.length === 0 ? '<p class="col-span-full text-center text-gray-500">لا توجد محاضرات في هذا القسم بعد.</p>' : '';
+                
+                filteredLectures.forEach((lecture) => {
                     grid.innerHTML += `<div class="card bg-white p-4 rounded-lg shadow-md flex flex-col justify-between"><h4 class="font-bold text-lg text-gray-800">${lecture.title}</h4><div class="mt-4 flex justify-between items-center gap-2"><a href="${lecture.url}" target="_blank" download class="flex-grow text-center text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 py-2 px-3 rounded-lg">فتح وتحميل</a></div></div>`;
                 });
             });
@@ -175,7 +184,8 @@
                 list.innerHTML = snapshot.empty ? '<p class="text-gray-500 text-center">لا توجد محاضرات مضافة.</p>' : '';
                 snapshot.forEach(doc => {
                     const lecture = doc.data();
-                    list.innerHTML += `<div class="admin-list-item flex justify-between items-center p-2 border-b"><span class="text-sm">${lecture.title} (${lecture.subject})</span><button class="delete-btn p-1 text-red-500 hover:text-red-700" data-id="${doc.id}" data-type="lecture"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div>`;
+                    const typeLabel = lecture.translationStatus === 'translated' ? 'مترجم' : 'غير مترجم';
+                    list.innerHTML += `<div class="admin-list-item flex justify-between items-center p-2 border-b"><span class="text-sm">${lecture.title} <span class="text-xs text-gray-500">(${lecture.subject} - ${typeLabel})</span></span><button class="delete-btn p-1 text-red-500 hover:text-red-700" data-id="${doc.id}" data-type="lecture"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button></div>`;
                 });
             });
         }
@@ -206,7 +216,6 @@
                 if (document.getElementById('admin-password').value === ADMIN_PASSWORD) {
                     document.getElementById('admin-login-modal').classList.add('hidden');
                     document.getElementById('admin-panel-modal').classList.remove('hidden');
-                    // Load admin lists when panel is opened
                     loadLecturesForAdmin();
                     loadTelegramForAdmin();
                 } else { alert('رمز سري خاطئ!'); }
@@ -216,7 +225,6 @@
             document.getElementById('schedule-form').addEventListener('submit', handleScheduleSubmit);
             document.getElementById('lecture-form').addEventListener('submit', handleLectureSubmit);
             document.getElementById('telegram-form').addEventListener('submit', handleTelegramSubmit);
-            // Attach single listener for all delete buttons in the admin panel
             document.getElementById('admin-panel-modal').addEventListener('click', (e) => {
                 const deleteBtn = e.target.closest('.delete-btn');
                 if (deleteBtn) handleDeleteClick(deleteBtn);
@@ -247,7 +255,6 @@
             
             if (!subject || !title || !fileId) return alert('يرجى ملء جميع الحقول.');
             
-            // Auto-format the Google Drive URL
             const url = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
             try {
